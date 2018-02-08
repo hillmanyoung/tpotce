@@ -207,7 +207,7 @@ openssl req \
         -keyout "/etc/nginx/ssl/nginx.key" \
         -out "/etc/nginx/ssl/nginx.crt" \
         -days 3650 \
-        -subj '/C=AU/ST=Some-State/O=Internet Widgits Pty Ltd' 2>&1 | dialog --title "[ Generating a self-signed-certificate for NGINX ]" $myPROGRESSBOXCONF;
+        -subj '/C=CN/ST=Hubei/O=Changjiang Securities Ltd' 2>&1 | dialog --title "[ Generating a self-signed-certificate for NGINX ]" $myPROGRESSBOXCONF;
 
 # Let's setup the ntp server
 if [ -f $myNTPCONFPATH ];
@@ -312,6 +312,21 @@ EOF
 
 # Let's modify the sources list
 sed -i '/cdrom/d' /etc/apt/sources.list
+fuECHO "### Replace 163.com sources."
+cp /etc/apt/sources.list /etc/apt/sources.list.bak
+apt-get clean
+cat > /etc/apt/sources.list << EOF
+deb http://mirrors.163.com/ubuntu/ xenial main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ xenial-security main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ xenial-backports main restricted universe multiverse
+deb http://mirrors.163.com/ubuntu/ xenial-proposed main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ xenial main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ xenial-security main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ xenial-updates main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ xenial-backports main restricted universe multiverse
+deb-src http://mirrors.163.com/ubuntu/ xenial-proposed main restricted universe multiverse
+EOF
 
 # Let's make sure SSH roaming is turned off (CVE-2016-0777, CVE-2016-0778)
 fuECHO "### Let's make sure SSH roaming is turned off."
@@ -328,12 +343,12 @@ apt-get autoclean -y 2>&1 | dialog --title "[ Pulling updates ]" $myPROGRESSBOXC
 apt-get autoremove -y 2>&1 | dialog --title "[ Pulling updates ]" $myPROGRESSBOXCONF
 
 # Installing docker-compose, wetty, ctop, elasticdump, tpot
-pip install --upgrade pip 2>&1 | dialog --title "[ Installing pip ]" $myPROGRESSBOXCONF
-pip install docker-compose==1.16.1 2>&1 | dialog --title "[ Installing docker-compose ]" $myPROGRESSBOXCONF
-pip install elasticsearch-curator==5.2.0 2>&1 | dialog --title "[ Installing elasticsearch-curator ]" $myPROGRESSBOXCONF
+pip install -i http://pypi.douban.com/simple --trusted-host pypi.douban.com --upgrade pip 2>&1 | dialog --title "[ Installing pip ]" $myPROGRESSBOXCONF
+pip install -i http://pypi.douban.com/simple --trusted-host pypi.douban.com docker-compose==1.16.1 2>&1 | dialog --title "[ Installing docker-compose ]" $myPROGRESSBOXCONF
+pip install -i http://pypi.douban.com/simple --trusted-host pypi.douban.com elasticsearch-curator==5.2.0 2>&1 | dialog --title "[ Installing elasticsearch-curator ]" $myPROGRESSBOXCONF
 ln -s /usr/bin/nodejs /usr/bin/node 2>&1 | dialog --title "[ Installing wetty ]" $myPROGRESSBOXCONF
-npm install https://github.com/t3chn0m4g3/wetty -g 2>&1 | dialog --title "[ Installing wetty ]" $myPROGRESSBOXCONF
-npm install https://github.com/t3chn0m4g3/elasticsearch-dump -g 2>&1 | dialog --title "[ Installing elasticsearch-dump ]" $myPROGRESSBOXCONF
+npm --registry https://registry.npm.taobao.org install https://github.com/t3chn0m4g3/wetty -g 2>&1 | dialog --title "[ Installing wetty ]" $myPROGRESSBOXCONF
+npm --registry https://registry.npm.taobao.org install https://github.com/t3chn0m4g3/elasticsearch-dump -g 2>&1 | dialog --title "[ Installing elasticsearch-dump ]" $myPROGRESSBOXCONF
 wget https://github.com/bcicen/ctop/releases/download/v0.6.1/ctop-0.6.1-linux-amd64 -O ctop 2>&1 | dialog --title "[ Installing ctop ]" $myPROGRESSBOXCONF
 mv ctop /usr/bin/ 2>&1 | dialog --title "[ Installing ctop ]" $myPROGRESSBOXCONF
 chmod +x /usr/bin/ctop 2>&1 | dialog --title "[ Installing ctop ]" $myPROGRESSBOXCONF

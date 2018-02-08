@@ -243,7 +243,7 @@ cd ..
 
 # Let's create the new .iso
 cd $myTPOTDIR
-mkisofs -gui -D -r -V "T-Pot" -cache-inodes -J -l -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../$myTPOTISO ../$myTPOTDIR 2>&1 | awk '{print $1+0} fflush()' | cut -f1 -d"." | dialog --backtitle "$myBACKTITLE" --title "[ Building T-Pot .iso ... ]" --gauge "" 5 70 0
+genisoimage -gui -D -r -V "T-Pot" -cache-inodes -J -l -b isolinux.bin -c boot.cat -no-emul-boot -boot-load-size 4 -boot-info-table -o ../$myTPOTISO ../$myTPOTDIR 2>&1 | awk '{print $1+0} fflush()' | cut -f1 -d"." | dialog --backtitle "$myBACKTITLE" --title "[ Building T-Pot .iso ... ]" --gauge "" 5 70 0
 echo 100 | dialog --backtitle "$myBACKTITLE" --title "[ Building T-Pot .iso ... Done! ]" --gauge "" 5 70
 cd ..
 isohybrid $myTPOTISO
