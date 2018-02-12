@@ -370,10 +370,25 @@ sed -i 's#Port 22#Port 64295#' /etc/ssh/sshd_config 2>&1 | dialog --title "[ SSH
 sed -i 's#\#PasswordAuthentication yes#PasswordAuthentication no#' /etc/ssh/sshd_config 2>&1 | dialog --title "[ SSH password authentication only from RFC1918 networks ]" $myPROGRESSBOXCONF
 tee -a /etc/ssh/sshd_config 2>&1>/dev/null <<EOF
 
-
 Match address 127.0.0.1,10.0.0.0/8,172.16.0.0/12,192.168.0.0/16
     PasswordAuthentication yes
 EOF
+
+fuECHO "### Patching Docker defaults"
+tee -a /etc/default/docker <<EOF
+DOCKER_OPTS="-r=false"
+EOF
+
+fuECHO "### Patching docker using aliyun mirros."
+tee -a /etc/docker/daemon.json <<EOF
+{
+    "registry-mirrors":["https://4432scbk.mirror.aliyuncs.com"]
+}
+EOF
+
+# Let's restart docker for proxy changes to take effect
+systemctl restart docker
+sleep 5
 
 # Let's make sure only myFLAVOR images will be downloaded and started
 case $myFLAVOR in
